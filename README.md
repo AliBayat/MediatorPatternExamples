@@ -21,7 +21,7 @@ Examples of this pattern are presented in following languages:
 if you would like to add example in any language i left out, you are welcomed to send a pull request.
 
   [1]: C++/README.md
-  [2]: C#/README.md
+  [2]: C%23/README.md
   [3]: Go/README.md
   [4]: Java/README.md
   [5]: PHP/README.md
