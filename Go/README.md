@@ -161,8 +161,10 @@ func main() {
 #### Output.txt: Execution result
 
 ```
-Item Nike Shirt is now in stock
-Sending email to customer abc@gmail.com for item Nike Shirt
-Sending email to customer xyz@gmail.com for item Nike Shirt
+PassengerTrain: Arrived
+FreightTrain: Arrival blocked, waiting
+PassengerTrain: Leaving
+FreightTrain: Arrival permitted
+FreightTrain: Arrived
 ```
 
