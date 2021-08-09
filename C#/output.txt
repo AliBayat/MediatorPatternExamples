@@ -1,18 +1,10 @@
-Subject: Attached an observer.
-Subject: Attached an observer.
+Client triggers operation A.
+Component 1 does A.
+Mediator reacts on A and triggers following operations:
+Component 2 does C.
 
-Subject: I'm doing something important.
-Subject: My state has just changed to: 2
-Subject: Notifying observers...
-ConcreteObserverA: Reacted to the event.
-ConcreteObserverB: Reacted to the event.
-
-Subject: I'm doing something important.
-Subject: My state has just changed to: 1
-Subject: Notifying observers...
-ConcreteObserverA: Reacted to the event.
-Subject: Detached an observer.
-
-Subject: I'm doing something important.
-Subject: My state has just changed to: 5
-Subject: Notifying observers...
+Client triggers operation D.
+Component 2 does D.
+Mediator reacts on D and triggers following operations:
+Component 1 does B.
+Component 2 does C.
