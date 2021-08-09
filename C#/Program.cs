@@ -1,100 +1,98 @@
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
-namespace DesignPatterns.Observer.Conceptual
+namespace DesignPatterns.Mediator.Conceptual
 {
-    public interface IObserver
+    // The Mediator interface declares a method used by components to notify the
+    // mediator about various events. The Mediator may react to these events and
+    // pass the execution to other components.
+    public interface IMediator
     {
-        // Receive update from subject
-        void Update(ISubject subject);
+        void Notify(object sender, string ev);
     }
 
-    public interface ISubject
+    // Concrete Mediators implement cooperative behavior by coordinating several
+    // components.
+    class ConcreteMediator : IMediator
     {
-        // Attach an observer to the subject.
-        void Attach(IObserver observer);
+        private Component1 _component1;
 
-        // Detach an observer from the subject.
-        void Detach(IObserver observer);
+        private Component2 _component2;
 
-        // Notify all observers about an event.
-        void Notify();
-    }
-
-    // The Subject owns some important state and notifies observers when the
-    // state changes.
-    public class Subject : ISubject
-    {
-        // For the sake of simplicity, the Subject's state, essential to all
-        // subscribers, is stored in this variable.
-        public int State { get; set; } = -0;
-
-        // List of subscribers. In real life, the list of subscribers can be
-        // stored more comprehensively (categorized by event type, etc.).
-        private List<IObserver> _observers = new List<IObserver>();
-
-        // The subscription management methods.
-        public void Attach(IObserver observer)
+        public ConcreteMediator(Component1 component1, Component2 component2)
         {
-            Console.WriteLine("Subject: Attached an observer.");
-            this._observers.Add(observer);
-        }
+            this._component1 = component1;
+            this._component1.SetMediator(this);
+            this._component2 = component2;
+            this._component2.SetMediator(this);
+        } 
 
-        public void Detach(IObserver observer)
+        public void Notify(object sender, string ev)
         {
-            this._observers.Remove(observer);
-            Console.WriteLine("Subject: Detached an observer.");
-        }
-
-        // Trigger an update in each subscriber.
-        public void Notify()
-        {
-            Console.WriteLine("Subject: Notifying observers...");
-
-            foreach (var observer in _observers)
+            if (ev == "A")
             {
-                observer.Update(this);
+                Console.WriteLine("Mediator reacts on A and triggers folowing operations:");
+                this._component2.DoC();
             }
-        }
-
-        // Usually, the subscription logic is only a fraction of what a Subject
-        // can really do. Subjects commonly hold some important business logic,
-        // that triggers a notification method whenever something important is
-        // about to happen (or after it).
-        public void SomeBusinessLogic()
-        {
-            Console.WriteLine("\nSubject: I'm doing something important.");
-            this.State = new Random().Next(0, 10);
-
-            Thread.Sleep(15);
-
-            Console.WriteLine("Subject: My state has just changed to: " + this.State);
-            this.Notify();
-        }
-    }
-
-    // Concrete Observers react to the updates issued by the Subject they had
-    // been attached to.
-    class ConcreteObserverA : IObserver
-    {
-        public void Update(ISubject subject)
-        {            
-            if ((subject as Subject).State < 3)
+            if (ev == "D")
             {
-                Console.WriteLine("ConcreteObserverA: Reacted to the event.");
+                Console.WriteLine("Mediator reacts on D and triggers following operations:");
+                this._component1.DoB();
+                this._component2.DoC();
             }
         }
     }
 
-    class ConcreteObserverB : IObserver
+    // The Base Component provides the basic functionality of storing a
+    // mediator's instance inside component objects.
+    class BaseComponent
     {
-        public void Update(ISubject subject)
+        protected IMediator _mediator;
+
+        public BaseComponent(IMediator mediator = null)
         {
-            if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
-            {
-                Console.WriteLine("ConcreteObserverB: Reacted to the event.");
-            }
+            this._mediator = mediator;
+        }
+
+        public void SetMediator(IMediator mediator)
+        {
+            this._mediator = mediator;
+        }
+    }
+
+    // Concrete Components implement various functionality. They don't depend on
+    // other components. They also don't depend on any concrete mediator
+    // classes.
+    class Component1 : BaseComponent
+    {
+        public void DoA()
+        {
+            Console.WriteLine("Component 1 does A.");
+
+            this._mediator.Notify(this, "A");
+        }
+
+        public void DoB()
+        {
+            Console.WriteLine("Component 1 does B.");
+
+            this._mediator.Notify(this, "B");
+        }
+    }
+
+    class Component2 : BaseComponent
+    {
+        public void DoC()
+        {
+            Console.WriteLine("Component 2 does C.");
+
+            this._mediator.Notify(this, "C");
+        }
+
+        public void DoD()
+        {
+            Console.WriteLine("Component 2 does D.");
+
+            this._mediator.Notify(this, "D");
         }
     }
     
@@ -103,19 +101,17 @@ namespace DesignPatterns.Observer.Conceptual
         static void Main(string[] args)
         {
             // The client code.
-            var subject = new Subject();
-            var observerA = new ConcreteObserverA();
-            subject.Attach(observerA);
+            Component1 component1 = new Component1();
+            Component2 component2 = new Component2();
+            new ConcreteMediator(component1, component2);
 
-            var observerB = new ConcreteObserverB();
-            subject.Attach(observerB);
+            Console.WriteLine("Client triggets operation A.");
+            component1.DoA();
 
-            subject.SomeBusinessLogic();
-            subject.SomeBusinessLogic();
+            Console.WriteLine();
 
-            subject.Detach(observerB);
-
-            subject.SomeBusinessLogic();
+            Console.WriteLine("Client triggers operation D.");
+            component2.DoD();
         }
     }
 }
